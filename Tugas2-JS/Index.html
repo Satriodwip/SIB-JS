@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Pegawai</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-white to-blue-50 flex justify-center items-center min-h-screen">
+
+  <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-5xl">
+    <h2 class="text-3xl font-bold mb-6 text-center text-blue-700">📊 Data Pegawai</h2>
+
+    <div class="overflow-x-auto">
+      <table class="table-auto w-full border-collapse overflow-hidden rounded-xl shadow">
+        <thead class="bg-blue-600 text-white">
+          <tr>
+            <th class="px-4 py-3">Nama Pegawai</th>
+            <th class="px-4 py-3">Umur</th>
+            <th class="px-4 py-3">Jabatan</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Gaji Pokok</th>
+            <th class="px-4 py-3">Tunjangan Jabatan</th>
+            <th class="px-4 py-3">BPJS</th>
+            <th class="px-4 py-3">Tunjangan Keluarga</th>
+          </tr>
+        </thead>
+        <tbody id="data-pegawai" class="divide-y divide-gray-200 text-gray-700"></tbody>
+        <tfoot>
+          <tr class="bg-green-100 font-bold text-green-800">
+            <td colspan="7" class="px-4 py-3 text-right">💰 Total Gaji</td>
+            <td id="total-gaji" class="px-4 py-3"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Data pegawai
+    let nama = "dodi prayodi";
+    let umur = 25;
+    let jabatan = "manajer";
+    let status = "menikah";
+
+    // Gaji pokok berdasarkan jabatan
+    let gapok = 0;
+    if (jabatan.toLowerCase() === "manajer") {
+      gapok = 15000000;
+    } else if (jabatan.toLowerCase() === "asisten manajer") {
+      gapok = 10000000;
+    } else if (jabatan.toLowerCase() === "staff") {
+      gapok = 5000000;
+    }
+
+    // Perhitungan
+    let tunjanganJabatan = 0.15 * gapok;
+    let bpjs = 0.10 * gapok;
+    let tunjanganKeluarga = (status.toLowerCase() === "menikah") ? 0.20 * gapok : 0;
+    let totalGaji = gapok + tunjanganJabatan + bpjs + tunjanganKeluarga;
+
+    // Format Rupiah
+    function formatRupiah(angka) {
+      return "Rp " + angka.toLocaleString("id-ID");
+    }
+
+    // Isi tabel
+    document.getElementById("data-pegawai").innerHTML = `
+      <tr class="hover:bg-blue-50 transition">
+        <td class="px-4 py-3">${nama}</td>
+        <td class="px-4 py-3">${umur}</td>
+        <td class="px-4 py-3 capitalize">${jabatan}</td>
+        <td class="px-4 py-3 capitalize">${status}</td>
+        <td class="px-4 py-3">${formatRupiah(gapok)}</td>
+        <td class="px-4 py-3">${formatRupiah(tunjanganJabatan)}</td>
+        <td class="px-4 py-3">${formatRupiah(bpjs)}</td>
+        <td class="px-4 py-3">${formatRupiah(tunjanganKeluarga)}</td>
+      </tr>
+    `;
+
+    document.getElementById("total-gaji").innerText = formatRupiah(totalGaji);
+  </script>
+
+</body>
+</html>
