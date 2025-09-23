@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Manajemen Transportasi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 p-6">
+  <h1 class="text-3xl md:text-4xl font-extrabold text-center text-white drop-shadow-lg mb-10">
+     Sistem Manajemen Transportasi 
+  </h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl">
+
+    <!-- Card Tambah Pelanggan -->
+    <div class="p-6 rounded-2xl border border-white/30 bg-white/20 backdrop-blur-lg shadow-lg">
+      <h2 class="text-xl font-bold text-white mb-4">Tambah Pelanggan</h2>
+      <form id="formPelanggan" class="space-y-4">
+        <input id="nama" type="text" placeholder="Nama Pelanggan" required
+          class="w-full p-2 rounded-lg border border-white/30 bg-white/30 backdrop-blur-md text-gray-900 placeholder-gray-700">
+
+        <input id="telepon" type="text" placeholder="Nomor Telepon" required
+          class="w-full p-2 rounded-lg border border-white/30 bg-white/30 backdrop-blur-md text-gray-900 placeholder-gray-700">
+
+        <!-- Custom Dropdown -->
+        <div class="relative w-full">
+          <button id="dropdownBtn" type="button"
+            class="w-full p-2 rounded-lg border border-white/30 bg-white/30 backdrop-blur-md text-gray-900 flex justify-between items-center">
+            <span id="dropdownText">-- Pilih Kendaraan --</span>
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <ul id="dropdownList"
+            class="hidden absolute w-full mt-2 rounded-lg border border-white/30 bg-white/30 backdrop-blur-md shadow-lg text-gray-900">
+            <li class="px-4 py-2 hover:bg-white/40 cursor-pointer" onclick="selectItem('Mobil')">Mobil</li>
+            <li class="px-4 py-2 hover:bg-white/40 cursor-pointer" onclick="selectItem('Motor')">Motor</li>
+            <li class="px-4 py-2 hover:bg-white/40 cursor-pointer" onclick="selectItem('Bus')">Bus</li>
+          </ul>
+        </div>
+
+        <button type="submit"
+          class="w-full py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700">Tambah</button>
+      </form>
+    </div>
+
+    <!-- Card Daftar Pelanggan -->
+    <div class="p-6 rounded-2xl border border-white/30 bg-white/20 backdrop-blur-lg shadow-lg">
+      <h2 class="text-xl font-bold text-white mb-4">Daftar Pelanggan</h2>
+      <ul id="daftarPelanggan" class="space-y-3"></ul>
+    </div>
+  </div>
+
+  <!-- Modal Validasi -->
+  <div id="modalValidasi" class="fixed inset-0 bg-black/40 hidden items-center justify-center">
+    <div class="p-6 rounded-2xl border border-white/30 bg-white/30 backdrop-blur-lg shadow-xl text-center max-w-sm w-full">
+      <h3 class="text-lg font-bold text-white mb-4">Konfirmasi</h3>
+      <p id="validasiText" class="text-white mb-6"></p>
+      <div class="flex justify-center gap-4">
+        <button id="batalHapus" class="px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-red-600">Batal</button>
+        <button id="konfirmasiHapus" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">Selesai</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Class OOP
+    class Pelanggan {
+      constructor(nama, nomorTelepon, kendaraanDisewa) {
+        this.nama = nama;
+        this.nomorTelepon = nomorTelepon;
+        this.kendaraanDisewa = kendaraanDisewa;
+      }
+    }
+
+    const pelangganList = [];
+    const daftarPelanggan = document.getElementById("daftarPelanggan");
+    const formPelanggan = document.getElementById("formPelanggan");
+
+    let kendaraanDipilih = "";
+    let pelangganTerpilihIndex = null;
+
+    // Custom Dropdown
+    const dropdownBtn = document.getElementById("dropdownBtn");
+    const dropdownList = document.getElementById("dropdownList");
+    const dropdownText = document.getElementById("dropdownText");
+
+    dropdownBtn.addEventListener("click", () => {
+      dropdownList.classList.toggle("hidden");
+    });
+
+    function selectItem(value) {
+      kendaraanDipilih = value;
+      dropdownText.textContent = value;
+      dropdownList.classList.add("hidden");
+    }
+
+    window.addEventListener("click", function (e) {
+      if (!e.target.closest("#dropdownBtn")) {
+        dropdownList.classList.add("hidden");
+      }
+    });
+
+    // Tambah Pelanggan
+    formPelanggan.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const nama = document.getElementById("nama").value;
+      const telepon = document.getElementById("telepon").value;
+
+      if (!kendaraanDipilih) {
+        alert("Pilih kendaraan terlebih dahulu!");
+        return;
+      }
+
+      const pelanggan = new Pelanggan(nama, telepon, kendaraanDipilih);
+      pelangganList.push(pelanggan);
+      renderPelanggan();
+
+      formPelanggan.reset();
+      kendaraanDipilih = "";
+      dropdownText.textContent = "-- Pilih Kendaraan --";
+    });
+
+    // Render List Pelanggan
+    function renderPelanggan() {
+      daftarPelanggan.innerHTML = "";
+      pelangganList.forEach((p, index) => {
+        const li = document.createElement("li");
+        li.className = "p-4 rounded-lg border border-white/30 bg-white/20 backdrop-blur-md flex justify-between items-center";
+        li.innerHTML = `
+          <div>
+            <p class="text-white font-semibold">${p.nama}</p>
+            <p class="text-gray-200 text-sm">${p.nomorTelepon} - ${p.kendaraanDisewa}</p>
+          </div>
+          <button onclick="showModal(${index})" class="px-3 py-1 rounded-lg bg-green-600 text-white hover:bg-green-700">Selesai</button>
+        `;
+        daftarPelanggan.appendChild(li);
+      });
+    }
+
+    // Modal Validasi
+    const modal = document.getElementById("modalValidasi");
+    const validasiText = document.getElementById("validasiText");
+    const konfirmasiHapus = document.getElementById("konfirmasiHapus");
+    const batalHapus = document.getElementById("batalHapus");
+
+    window.showModal = function (index) {
+      pelangganTerpilihIndex = index;
+      validasiText.textContent = `Apakah pelanggan "${pelangganList[index].nama}" sudah selesai menyewa kendaraan?`;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    };
+
+    batalHapus.addEventListener("click", () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    });
+
+    konfirmasiHapus.addEventListener("click", () => {
+      if (pelangganTerpilihIndex !== null) {
+        pelangganList.splice(pelangganTerpilihIndex, 1);
+        renderPelanggan();
+      }
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    });
+  </script>
+</body>
+</html>
